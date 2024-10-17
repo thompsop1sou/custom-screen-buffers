@@ -1,0 +1,110 @@
+[gd_scene load_steps=13 format=3 uid="uid://t0e8wrcfrrl8"]
+
+[ext_resource type="PackedScene" uid="uid://8asyaabarqim" path="res://objects/main_camera.tscn" id="1_oub8t"]
+[ext_resource type="Shader" path="res://shaders/transparent_shader.gdshader" id="2_t8vaq"]
+[ext_resource type="Shader" path="res://shaders/opaque_shader.gdshader" id="3_xyfda"]
+
+[sub_resource type="Environment" id="Environment_4jik7"]
+background_mode = 1
+background_color = Color(0.501961, 0.501961, 0.501961, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vvkpa"]
+render_priority = 0
+shader = ExtResource("2_t8vaq")
+shader_parameter/shaded = true
+shader_parameter/albedo_color = Color(0, 0, 1, 0.501961)
+shader_parameter/specular_value = 1.0
+shader_parameter/metallic_value = 0.0
+shader_parameter/metallic_texture_channel = 0
+shader_parameter/roughness_value = 1.0
+shader_parameter/roughness_texture_channel = 0
+shader_parameter/emission_color = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_1frqt"]
+material = SubResource("ShaderMaterial_vvkpa")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_napg6"]
+render_priority = 0
+shader = ExtResource("2_t8vaq")
+shader_parameter/shaded = true
+shader_parameter/albedo_color = Color(1, 0, 0, 0.501961)
+shader_parameter/specular_value = 1.0
+shader_parameter/metallic_value = 0.0
+shader_parameter/metallic_texture_channel = 0
+shader_parameter/roughness_value = 1.0
+shader_parameter/roughness_texture_channel = 0
+shader_parameter/emission_color = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_k2atl"]
+material = SubResource("ShaderMaterial_napg6")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_040qa"]
+render_priority = 0
+shader = ExtResource("3_xyfda")
+shader_parameter/shaded = true
+shader_parameter/albedo_color = Color(0, 1, 0, 1)
+shader_parameter/specular_value = 1.0
+shader_parameter/metallic_value = 0.0
+shader_parameter/metallic_texture_channel = 0
+shader_parameter/roughness_value = 1.0
+shader_parameter/roughness_texture_channel = 0
+shader_parameter/emission_color = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 1.0
+
+[sub_resource type="PrismMesh" id="PrismMesh_m8koc"]
+material = SubResource("ShaderMaterial_040qa")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4l8v6"]
+render_priority = 0
+shader = ExtResource("3_xyfda")
+shader_parameter/shaded = true
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
+shader_parameter/specular_value = 1.0
+shader_parameter/metallic_value = 0.0
+shader_parameter/metallic_texture_channel = 0
+shader_parameter/roughness_value = 1.0
+shader_parameter/roughness_texture_channel = 0
+shader_parameter/emission_color = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_el30q"]
+material = SubResource("ShaderMaterial_4l8v6")
+size = Vector2(10, 10)
+
+[node name="TestScene" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_4jik7")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.965926, -0.25, 0.0669873, 0, 0.258819, 0.965926, -0.258819, -0.933013, 0.25, 0, 0, 0)
+layers = 3
+shadow_enabled = true
+
+[node name="MainCamera" parent="." instance=ExtResource("1_oub8t")]
+transform = Transform3D(0.707107, -0.353553, 0.612373, 0, 0.866026, 0.499999, -0.707107, -0.353553, 0.612373, 1.25, 1, 1.25)
+
+[node name="CubeMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+layers = 15
+mesh = SubResource("BoxMesh_1frqt")
+
+[node name="SphereMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0)
+layers = 15
+mesh = SubResource("SphereMesh_k2atl")
+
+[node name="PrismMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+layers = 15
+mesh = SubResource("PrismMesh_m8koc")
+
+[node name="PlaneMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+layers = 15
+mesh = SubResource("PlaneMesh_el30q")
