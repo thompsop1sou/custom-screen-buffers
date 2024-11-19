@@ -35,10 +35,8 @@ var _excluded_properties: Array[StringName] = [&"cull_mask", &"current", &"envir
 ## Returns a list of property names unique to a Camera3D
 static func get_camera_3d_unique_properties() -> Array[StringName]:
 	var child_camera_settable_properties: Array[StringName] = []
-	for prop in Camera3D.new().get_property_list():
+	for prop: Dictionary in ClassDB.class_get_property_list("Camera3D", true):
 		child_camera_settable_properties.append(prop["name"])
-	for prop in Node3D.new().get_property_list():
-		child_camera_settable_properties.erase(prop["name"])
 	return child_camera_settable_properties
 
 
