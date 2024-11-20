@@ -1,9 +1,16 @@
 shader_type spatial;
 render_mode unshaded;
+/**
+ * normal_shader.gdshader
+ *
+ * Part of the modular approach to object shaders.
+ *
+ * This shader handles rendering normal info and is rendered only on the normal layer.
+ */
 
 
 
-// PREPROCESSORS
+// PREPROCESSOR DIRECTIVES
 
 // Contains layer numbers and some common functions
 #include "res://shaders/globals.gdshaderinc"
@@ -19,7 +26,8 @@ void vertex()
 	// Don't render if not on the normal layer
 	if (CAMERA_VISIBLE_LAYERS != NORMAL_LAYER)
 	{
-		VERTEX /= 0.0;
+		// This discards by setting the vertex to vec3(inf, inf, inf)
+		VERTEX = vec3(1.0 / 0.0);
 	}
 #endif
 }

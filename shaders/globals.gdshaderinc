@@ -1,7 +1,15 @@
-// PREPROCESSORS
+/**
+ * globals.gdshaderinc
+ *
+ * Defines a few constants and functions that are used in multiple places.
+ */
 
-// If this is defined, the modular shaders will discard in the vertex function (by dividing by
-// zero). If this is not defined, they will just discard in the fragment function.
+
+
+// PREPROCESSOR DIRECTIVES
+
+// If this is defined, the modular shaders will discard in the vertex function (by setting VERTEX
+// to vec3(inf, inf, inf)). If this is not defined, they will just discard in the fragment function.
 #define VERTEX_DISCARD
 
 

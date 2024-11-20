@@ -1,4 +1,22 @@
-// PREPROCESSORS
+/**
+ * color_shader.gdshaderinc
+ *
+ * Part of the modular approach to object shaders.
+ *
+ * This shader include file is used by both "opaque_color_shader.gdshader" and
+ * "transparent_color_shader.gdshader". Since rendering opaque and transparent objects is almost
+ * exactly the same (except for writing to ALPHA), it makes sense to consolidate the shared code in
+ * a single file.
+ *
+ * This shader only handles rendering color info, which is rendered on all layers besides the depth
+ * and normal layers. (This ensures that objects will appear correct in the editor.) It attempts to
+ * render a material similar to StandardMaterial3D. (The list of available uniforms is a subset of
+ * those available in StandardMaterial3D.)
+ */
+
+
+
+// PREPROCESSOR DIRECTIVES
 
 // Contains layer numbers and some common functions
 #include "res://shaders/globals.gdshaderinc"
@@ -79,7 +97,8 @@ void vertex()
 	// Don't render if on the depth or normal layers
 	if (CAMERA_VISIBLE_LAYERS == DEPTH_LAYER || CAMERA_VISIBLE_LAYERS == NORMAL_LAYER)
 	{
-		VERTEX /= 0.0;
+		// This discards by setting the vertex to vec3(inf, inf, inf)
+		VERTEX = vec3(1.0 / 0.0);
 	}
 #endif
 }
@@ -94,7 +113,7 @@ void fragment()
 		discard;
 	}
 #endif
-	
+
 	// Otherwise, render color
 	vec4 color = texture(albedo_texture, UV) * albedo_color;
 	ALBEDO = color.rgb;

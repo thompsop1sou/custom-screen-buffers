@@ -1,4 +1,23 @@
-// PREPROCESSORS
+/**
+ * object_shader.gdshaderinc
+ *
+ * Part of the monolithic approach to object shaders.
+ *
+ * This shader include file is used by both "opaque_shader.gdshader" and
+ * "transparent_shader.gdshader". Since rendering opaque and transparent objects is almost exactly
+ * the same (except for writing to ALPHA), it makes sense to consolidate the shared code in a single
+ * file.
+ *
+ * This shader handles rendering on all of the different layers in both the fragment() and light()
+ * functions. If on the depth layer, it renders depth info. If on the normal layer, it renders
+ * normal info. Otherwise, if on the color layer, it attempts to render a material similar to
+ * StandardMaterial3D. (The list of available uniforms is a subset of those presented in
+ * StandardMaterial3D.)
+ */
+
+
+
+// PREPROCESSOR DIRECTIVES
 
 // Contains layer numbers and some common functions
 #include "res://shaders/globals.gdshaderinc"
@@ -139,8 +158,8 @@ void light()
 		{
 			// Calculate diffuse using Lambert model
 			DIFFUSE_LIGHT += clamp(dot(NORMAL, LIGHT), 0.0, 1.0) * ATTENUATION * LIGHT_COLOR / PI;
-			// Calculate specular using Phong model
-			// (with some modifications regarding how light is spread out due to roughness)
+			// Calculate specular using Phong model, with some custom modifications.
+			// (I really have no idea what i'm doing here :D)
 			vec3 LIGHT_REFLECTED = reflect(-LIGHT, NORMAL);
 			float k = 12.0 * (1.0 - ROUGHNESS);
 			float metallic_contribution = pow(16.0, METALLIC - 1.0);

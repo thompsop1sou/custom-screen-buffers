@@ -11,7 +11,7 @@ extends Camera3D
 
 # PUBLIC PROPERTIES
 
-## Holds an array of properties that are unique to Camera3Ds.
+## Holds an array of properties that are unique to [Camera3D]s.
 static var camera_3d_unique_properties: Array[StringName] = get_camera_3d_unique_properties()
 
 
@@ -33,7 +33,7 @@ var _excluded_properties: Array[StringName] = [&"cull_mask", &"current", &"envir
 
 # PUBLIC METHODS
 
-## Returns a list of property names unique to a Camera3D
+## Returns a list of property names unique to [Camera3D]s.
 static func get_camera_3d_unique_properties() -> Array[StringName]:
 	var child_camera_settable_properties: Array[StringName] = []
 	for prop: Dictionary in ClassDB.class_get_property_list("Camera3D", true):
@@ -62,8 +62,8 @@ func _on_parent_viewport_size_changed() -> void:
 			if viewport is SubViewport:
 				viewport.size = _parent_viewport.size
 
-# Overriding what happens when a property is set
-# Keeps the depth and normals camera in sync with the main camera
+# Overriding what happens when a property is set.
+# Keeps the depth and normals camera in sync with the main camera.
 func _set(property: StringName, value: Variant) -> bool:
 	# This branch sets both the main camera and the child cameras
 	if property in camera_3d_unique_properties and property not in _excluded_properties:

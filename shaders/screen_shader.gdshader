@@ -1,9 +1,18 @@
 shader_type spatial;
 render_mode unshaded;
+/**
+ * screen_shader.gdshader
+ *
+ * A post-processing shader that has been applied to the FullScreenQuad node in the
+ * "main_camera.tscn" scene. In the vertex() function, it just ensures that the quad covers the
+ * whole screen. Then, in the fragment() function, it reads from the buffers that have been passed
+ * to it using a helper function get_pixel_info(). This info can then be used to render a
+ * post-processing effect.
+ */
 
 
 
-// PREPROCESSORS
+// PREPROCESSOR DIRECTIVES
 
 // Contains layer numbers and some common functions
 #include "res://shaders/globals.gdshaderinc"
@@ -12,13 +21,13 @@ render_mode unshaded;
 
 // UNIFORMS
 
-/** This texture holds colors from the second visual layer. */
+/** This texture holds color from the second visual layer. */
 uniform sampler2D color_buffer : filter_nearest;
 
-/** This texture holds depths from the third visual layer. */
+/** This texture holds depth info from the third visual layer. */
 uniform sampler2D depth_buffer : filter_nearest;
 
-/** This texture holds normals from the fourth visual layer. */
+/** This texture holds normal info from the fourth visual layer. */
 uniform sampler2D normal_buffer : filter_nearest;
 
 
@@ -78,5 +87,5 @@ void fragment()
 	ALBEDO = pixel_info.color.rgb;                  // Color
 	//ALBEDO = vec3(pixel_info.depth);                // Depth
 	//ALBEDO = 0.5 * (pixel_info.normal + vec3(1.0)); // Normal
-	//ALBEDO = fract(pixel_info.position);            // 3D Position
+	//ALBEDO = fract(pixel_info.position);            // 3D Position (in screen space)
 }
