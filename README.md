@@ -10,28 +10,38 @@ As of the creation of this project, Godot does not have a good system for creati
 
 ## Overview
 
-This project has two main parts that are necessary for achieving the custom buffer functionality: a camera scene and a set of object shaders. To see these in action, take a look at either **modular_test_scene.tscn** or **monolithic_test_scene.tscn**. These scenes are almost identical except for a difference in how the object shaders are written. (This difference is explained below.)
+This project has two main parts that are necessary for achieving the custom buffer functionality:
 
-### Camera Scene
+* A **camera scene**, which captures the buffers and passes them to the post-processing shader
 
-The scene **main_camera.tscn** is contains the following nodes:
-* 4 cameras (including the root `MainCamera`)
-* 3 subviewports
-* 1 full-screen quad (on which the post-processing shader **screen_shader.gdshader** is applied)
+* A set of **object shaders**, which ensure each object renders itself properly to the different buffers
 
-Think of this scene as single camera which captures all the necessary information and passes it to the post-processing effect on the full-screen quad. It captures color on layer 2, depth info on layer 3, and normal info on layer 4. Layer 1 is used as the "main" layer on which the post-processing effect is displayed.
+To see these in action, take a look at either **modular_test_scene.tscn** or **monolithic_test_scene.tscn**. These scenes are almost identical except for a difference in how the object shaders are written. (This difference is explained below.)
 
-> **Note:** Layer 1 is used in this way so that the color, depth info, or normal info of any rendered object does not interfere with the final result that is displayed by the full-screen quad. Some effects don't require this separation, so the color layer and main layer can be combined. Do whatever makes sense for your project.
-
-You can change the effect simply by editing the `fragment()` function of **screen_shader.gdshader**. In fact, there are already some lines of code that you can uncomment to see the different buffers (color is displayed by default):
+To change the final effect that is rendered, open **screen_shader.gdshader** and edit the `fragment()` function. In fact, there are already some lines of code that you can uncomment to see the different results (color is displayed by default):
 
 ```glsl
 // Set the screen shader to show info about this pixel (uncomment a line to view)
 ALBEDO = pixel_info.color.rgb;                  // Color
 //ALBEDO = vec3(pixel_info.depth);                // Depth
 //ALBEDO = 0.5 * (pixel_info.normal + vec3(1.0)); // Normal
-//ALBEDO = fract(pixel_info.position);            // 3D Position
+//ALBEDO = fract(pixel_info.position);            // 3D Position (in screen space)
 ```
+
+As you uncomment these lines, you should see results like the following:
+
+![Screen Shader Examples](screen_shader_examples.png "Screen Shader Examples")
+
+### Camera Scene
+
+The scene **main_camera.tscn** contains the following nodes:
+* 4 cameras (including the root `MainCamera`)
+* 3 subviewports
+* 1 full-screen quad (on which the post-processing shader **screen_shader.gdshader** is applied)
+
+Think of this scene as single camera which captures all the necessary information and passes it to the post-processing effect on the full-screen quad. It captures color on layer 2, depth info on layer 3, and normal info on layer 4. Layer 1 is used as the "main" layer on which the post-processing effect is displayed.
+
+> **Note:** Layer 1 is used in this way so that the full-screen quad does not interfere with the rendering of the color, depth, or normal buffers.
 
 ### Object Shaders
 
@@ -81,4 +91,8 @@ For any buffer where you plan to pass pure data (unaffected by lights or other v
 
 * For the viewport, make sure to enable the `use_hdr_2d` property. (The `Environment` resource could also be added to the viewport instead of the camera.)
 
-* For the object shader, if you have one monolithic shader, pass the data through the `EMISSION` output in the `fragment()` function. Then, in the `light()` function, make sure that both `DIFFUSE_LIGHT` and `SPECULAR_LIGHT` are zeroed. If you are using modular shaders, then you can use `render_mode unshaded;` and just write to `ALBEDO` in the `fragment()` function.
+* For the object shader:
+
+   * If you are using modular shaders chained together via the `next_pass` property, then you can use `render_mode unshaded;` and write to `ALBEDO` in the `fragment()` function.
+
+   * If you have a single monolithic shader, pass the data through the `EMISSION` output in the `fragment()` function. Then, in the `light()` function, make sure that both `DIFFUSE_LIGHT` and `SPECULAR_LIGHT` are zeroed.
