@@ -10,9 +10,8 @@
  *
  * This shader handles rendering on all of the different layers in both the fragment() and light()
  * functions. If on the depth layer, it renders depth info. If on the normal layer, it renders
- * normal info. Otherwise, if on the color layer, it attempts to render a material similar to
- * StandardMaterial3D. (The list of available uniforms is a subset of those presented in
- * StandardMaterial3D.)
+ * normal info. Otherwise, if on the color layer, it renders the color based on a uniform that has
+ * been passed in.
  */
 
 
@@ -29,68 +28,8 @@
 
 // UNIFORMS
 
-group_uniforms flags;
-
-/** Sets whether this material will be affected by lights. */
-uniform bool shaded = true;
-
-group_uniforms albedo;
-
 /** The material's base color. */
-uniform vec4 albedo_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
-
-/** Texture to multiply by albedo_color. Used for basic texturing of objects. */
-uniform sampler2D albedo_texture : hint_texture, source_color, hint_default_white;
-
-group_uniforms metallic;
-
-/** Adjusts the strength of specular reflections. */
-uniform float specular_value : hint_range(0.0, 1.0) = 1.0;
-
-/** A high value makes the material appear more like a metal. */
-uniform float metallic_value : hint_range(0.0, 1.0) = 0.0;
-
-/** Texture used to specify metallic for an object. This is multiplied by metallic. */
-uniform sampler2D metallic_texture : hint_texture, hint_default_white;
-
-/**
- * Specifies the channel of [code]metallic_texture[/code] in which metallic information is stored.
- * Channel 0: Red
- * Channel 1: Green
- * Channel 2: Blue
- * Channel 3: Alpha
- * Channel 4: Average of Red, Green, and Blue
- */
-uniform int metallic_texture_channel : hint_range(0, 4) = 0;
-
-group_uniforms roughness;
-
-/** Surface reflection. A value of 0 represents a perfect mirror while a value of 1 completely blurs the reflection. */
-uniform float roughness_value : hint_range(0.0, 1.0) = 1.0;
-
-/** Texture used to control the roughness per-pixel. Multiplied by roughness. */
-uniform sampler2D roughness_texture : hint_texture, hint_default_white;
-
-/**
- * Specifies the channel of [code]roughness_texture[/code] in which roughness information is stored.
- * Channel 0: Red
- * Channel 1: Green
- * Channel 2: Blue
- * Channel 3: Alpha
- * Channel 4: Average of Red, Green, and Blue
- */
-uniform int roughness_texture_channel : hint_range(0, 4) = 0;
-
-group_uniforms emission;
-
-/** The emitted light's color. Emitting light makes the object appear brighter. */
-uniform vec3 emission_color : source_color = vec3(0.0, 0.0, 0.0);
-
-/** Texture that specifies how much surface emits light at a given point. */
-uniform sampler2D emission_texture : hint_texture, source_color, hint_default_black;
-
-/** Multiplier for emitted light. */
-uniform float emission_energy = 1.0;
+uniform vec4 color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 
 
 
@@ -108,7 +47,7 @@ void fragment()
 {
 	camera_layers = CAMERA_VISIBLE_LAYERS;
 
-	// Use emission to display the depth value
+	// Use emission to render the depth value
 	if (camera_layers == DEPTH_LAYER)
 	{
 		ALBEDO = vec3(0.0);
@@ -117,27 +56,21 @@ void fragment()
 		EMISSION.y = fract(depth * 256.0);
 		EMISSION.z = 0.0; // Could add other info in this channel if desired...
 	}
-	// Use emission to display the normal value
+	// Use emission to render the normal value
 	else if (camera_layers == NORMAL_LAYER)
 	{
 		ALBEDO = vec3(0.0);
-		vec3 normal = 0.5 * (NORMAL + vec3(1.0));
-		EMISSION = normal;
+		EMISSION = 0.5 * (NORMAL + vec3(1.0));
 	}
-	// Display regular material properties
+	// Render albedo (and optionally alpha)
 	else
 	{
-		// Color properties
-		vec4 color = texture(albedo_texture, UV) * albedo_color;
 		ALBEDO = color.rgb;
 #ifndef OPAQUE
 		ALPHA = color.a;
 #endif
-		// Other properties
-		EMISSION = (texture(emission_texture, UV).rgb + emission_color) * emission_energy;
-		SPECULAR = specular_value;
-		METALLIC = dot(texture(metallic_texture, UV), texture_channel_vec[metallic_texture_channel]) * metallic_value;
-		ROUGHNESS = dot(texture(roughness_texture, UV), texture_channel_vec[roughness_texture_channel]) * roughness_value;
+		// Since the fragment() function has to be overridden, you may also want to look up how to
+		// render out other common properties, like roughness, emission, metallic, etc...
 	}
 }
 
@@ -153,25 +86,9 @@ void light()
 	// Display regular light properties
 	else
 	{
-		// Shaded material
-		if (shaded)
-		{
-			// Calculate diffuse using Lambert model
-			DIFFUSE_LIGHT += clamp(dot(NORMAL, LIGHT), 0.0, 1.0) * ATTENUATION * LIGHT_COLOR / PI;
-			// Calculate specular using Phong model, with some custom modifications.
-			// (I really have no idea what i'm doing here :D)
-			vec3 LIGHT_REFLECTED = reflect(-LIGHT, NORMAL);
-			float k = 12.0 * (1.0 - ROUGHNESS);
-			float metallic_contribution = pow(16.0, METALLIC - 1.0);
-			SPECULAR_LIGHT += pow(clamp(dot(VIEW, LIGHT_REFLECTED), 0.0, 1.0), pow(2.0, k)) *
-							specular_value * ATTENUATION * LIGHT_COLOR * metallic_contribution *
-							SPECULAR_AMOUNT * (k + 1.0) / PI;
-		}
-		// Unshaded material
-		else
-		{
-			DIFFUSE_LIGHT = vec3(1.0);
-			SPECULAR_LIGHT = vec3(0.0);
-		}
+		// Calculate diffuse using Lambert model (taken from the Godot docs with a slight change)
+		DIFFUSE_LIGHT += clamp(dot(NORMAL, LIGHT), 0.0, 1.0) * ATTENUATION * LIGHT_COLOR / PI;
+		// Since the light() function has to be overridden, you may also want to look up how to
+		// calculate specular light...
 	}
 }

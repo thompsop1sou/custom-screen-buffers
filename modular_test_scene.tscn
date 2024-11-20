@@ -22,74 +22,44 @@ render_priority = 0
 next_pass = SubResource("ShaderMaterial_digkk")
 shader = ExtResource("2_1y334")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jcn3g"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5iqwv"]
 render_priority = 0
 next_pass = SubResource("ShaderMaterial_he7g1")
-shader = ExtResource("5_7v8kw")
-shader_parameter/shaded = true
-shader_parameter/albedo_color = Color(0, 1, 0, 1)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader = ExtResource("2_kk583")
+shader_parameter/color = Color(0, 0, 1, 0.501961)
 
-[sub_resource type="PrismMesh" id="PrismMesh_6cw7r"]
-material = SubResource("ShaderMaterial_jcn3g")
+[sub_resource type="BoxMesh" id="BoxMesh_gcbgh"]
+material = SubResource("ShaderMaterial_5iqwv")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_veilf"]
 render_priority = 0
 next_pass = SubResource("ShaderMaterial_he7g1")
 shader = ExtResource("2_kk583")
-shader_parameter/albedo_color = Color(1, 0, 0, 0.501961)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader_parameter/color = Color(1, 0, 0, 0.501961)
 
 [sub_resource type="SphereMesh" id="SphereMesh_k2atl"]
 material = SubResource("ShaderMaterial_veilf")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5iqwv"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jcn3g"]
 render_priority = 0
 next_pass = SubResource("ShaderMaterial_he7g1")
-shader = ExtResource("2_kk583")
-shader_parameter/albedo_color = Color(0, 0, 1, 0.501961)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader = ExtResource("5_7v8kw")
+shader_parameter/color = Color(0, 1, 0, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_gcbgh"]
-material = SubResource("ShaderMaterial_5iqwv")
+[sub_resource type="PrismMesh" id="PrismMesh_6cw7r"]
+material = SubResource("ShaderMaterial_jcn3g")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p8bk1"]
 render_priority = 0
 next_pass = SubResource("ShaderMaterial_he7g1")
 shader = ExtResource("5_7v8kw")
-shader_parameter/shaded = true
-shader_parameter/albedo_color = Color(1, 1, 1, 1)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader_parameter/color = Color(1, 1, 1, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_el30q"]
 material = SubResource("ShaderMaterial_p8bk1")
 size = Vector2(10, 10)
 
-[node name="TestScene" type="Node3D"]
+[node name="ModularTestScene" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_4jik7")
@@ -103,9 +73,9 @@ shadow_enabled = true
 transform = Transform3D(0.707107, -0.353553, 0.612373, 0, 0.866026, 0.499999, -0.707107, -0.353553, 0.612373, 1.25, 1, 1.25)
 
 [node name="CubeMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 layers = 15
-mesh = SubResource("PrismMesh_6cw7r")
+mesh = SubResource("BoxMesh_gcbgh")
 
 [node name="SphereMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0)
@@ -113,9 +83,9 @@ layers = 15
 mesh = SubResource("SphereMesh_k2atl")
 
 [node name="PrismMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
 layers = 15
-mesh = SubResource("BoxMesh_gcbgh")
+mesh = SubResource("PrismMesh_6cw7r")
 
 [node name="PlaneMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)

@@ -14,15 +14,7 @@ ambient_light_energy = 0.5
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vvkpa"]
 render_priority = 0
 shader = ExtResource("2_t8vaq")
-shader_parameter/shaded = true
-shader_parameter/albedo_color = Color(0, 0, 1, 0.501961)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader_parameter/color = Color(0, 0, 1, 0.501961)
 
 [sub_resource type="BoxMesh" id="BoxMesh_1frqt"]
 material = SubResource("ShaderMaterial_vvkpa")
@@ -30,15 +22,7 @@ material = SubResource("ShaderMaterial_vvkpa")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_napg6"]
 render_priority = 0
 shader = ExtResource("2_t8vaq")
-shader_parameter/shaded = true
-shader_parameter/albedo_color = Color(1, 0, 0, 0.501961)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader_parameter/color = Color(1, 0, 0, 0.501961)
 
 [sub_resource type="SphereMesh" id="SphereMesh_k2atl"]
 material = SubResource("ShaderMaterial_napg6")
@@ -46,15 +30,7 @@ material = SubResource("ShaderMaterial_napg6")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_040qa"]
 render_priority = 0
 shader = ExtResource("3_xyfda")
-shader_parameter/shaded = true
-shader_parameter/albedo_color = Color(0, 1, 0, 1)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader_parameter/color = Color(0, 1, 0, 1)
 
 [sub_resource type="PrismMesh" id="PrismMesh_m8koc"]
 material = SubResource("ShaderMaterial_040qa")
@@ -62,21 +38,13 @@ material = SubResource("ShaderMaterial_040qa")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4l8v6"]
 render_priority = 0
 shader = ExtResource("3_xyfda")
-shader_parameter/shaded = true
-shader_parameter/albedo_color = Color(1, 1, 1, 1)
-shader_parameter/specular_value = 1.0
-shader_parameter/metallic_value = 0.0
-shader_parameter/metallic_texture_channel = 0
-shader_parameter/roughness_value = 1.0
-shader_parameter/roughness_texture_channel = 0
-shader_parameter/emission_color = Color(0, 0, 0, 1)
-shader_parameter/emission_energy = 1.0
+shader_parameter/color = Color(1, 1, 1, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_el30q"]
 material = SubResource("ShaderMaterial_4l8v6")
 size = Vector2(10, 10)
 
-[node name="TestScene" type="Node3D"]
+[node name="MonolithicTestScene" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_4jik7")

@@ -32,10 +32,10 @@ To change the final effect that is rendered, open **screen_shader.gdshader** and
 
 ```glsl
 // Set the screen shader to show info about this pixel (uncomment a line to view)
-ALBEDO = pixel_info.color.rgb;                  // Color
-//ALBEDO = vec3(pixel_info.depth);                // Depth
-//ALBEDO = 0.5 * (pixel_info.normal + vec3(1.0)); // Normal
-//ALBEDO = fract(pixel_info.position);            // 3D Position (in screen space)
+ALBEDO = color.rgb;                                // Color
+//ALBEDO = vec3(color.r + color.g + color.b) / 3.0;  // Grayscale 
+//ALBEDO = vec3(depth);                              // Depth
+//ALBEDO = 0.5 * (normal + vec3(1.0));               // Normal
 ```
 
 As you uncomment these lines, you should see results like the following:
