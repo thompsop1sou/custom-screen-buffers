@@ -1,7 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://8asyaabarqim"]
 
 [ext_resource type="Script" path="res://objects/main_camera.gd" id="1_70qug"]
-[ext_resource type="Script" path="res://objects/screen_shader_3d.gd" id="3_4op53"]
 [ext_resource type="Shader" path="res://shaders/screen_shader.gdshader" id="3_qo3oi"]
 [ext_resource type="Script" path="res://objects/attachable_sub_viewport.gd" id="4_5vkcf"]
 
@@ -9,22 +8,28 @@
 
 [sub_resource type="Environment" id="Environment_ljjf5"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_oxq8f"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_5no7o"]
 viewport_path = NodePath("ColorViewport")
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_fbipj"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_awddf"]
 viewport_path = NodePath("DepthViewport")
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_s04mf"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_fbfi3"]
 viewport_path = NodePath("NormalViewport")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_tpseh"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b1yv3"]
 resource_local_to_scene = true
-render_priority = -1
+render_priority = 0
 shader = ExtResource("3_qo3oi")
-shader_parameter/color_buffer = SubResource("ViewportTexture_oxq8f")
-shader_parameter/depth_buffer = SubResource("ViewportTexture_fbipj")
-shader_parameter/normal_buffer = SubResource("ViewportTexture_s04mf")
+shader_parameter/color_buffer = SubResource("ViewportTexture_5no7o")
+shader_parameter/depth_buffer = SubResource("ViewportTexture_awddf")
+shader_parameter/normal_buffer = SubResource("ViewportTexture_fbfi3")
+
+[sub_resource type="QuadMesh" id="QuadMesh_7g8ml"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_b1yv3")
+flip_faces = true
+size = Vector2(2, 2)
 
 [node name="MainCamera" type="Camera3D"]
 cull_mask = 1
@@ -57,7 +62,7 @@ use_hdr_2d = true
 script = ExtResource("4_5vkcf")
 camera = NodePath("../NormalCamera")
 
-[node name="ScreenShader3D" type="Node3D" parent="."]
-script = ExtResource("3_4op53")
-shader_material = SubResource("ShaderMaterial_tpseh")
-layers = 1
+[node name="FullScreenQuad" type="MeshInstance3D" parent="."]
+visible = false
+extra_cull_margin = 16384.0
+mesh = SubResource("QuadMesh_7g8ml")

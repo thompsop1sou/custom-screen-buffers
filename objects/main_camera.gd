@@ -24,6 +24,7 @@ var _excluded_properties: Array[StringName] = [&"cull_mask", &"current", &"envir
 # Keep references to various child nodes.
 @onready var _viewports: Array[Node] = find_children("*", "SubViewport")
 @onready var _cameras: Array[Node] = find_children("*", "Camera3D")
+@onready var _full_screen_quad: MeshInstance3D = $FullScreenQuad
 
 # Keep a reference to the viewport which is above this camera.
 @onready var _parent_viewport: Viewport = get_viewport()
@@ -45,6 +46,9 @@ static func get_camera_3d_unique_properties() -> Array[StringName]:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Make the full-screen quad visible when the project is running
+	if not Engine.is_editor_hint():
+		_full_screen_quad.show()
 	# Connect to changes in the parent viewport
 	if is_instance_valid(_parent_viewport):
 		_parent_viewport.size_changed.connect(_on_parent_viewport_size_changed)
