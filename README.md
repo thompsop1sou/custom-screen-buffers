@@ -2,6 +2,16 @@
 
 This is a Godot 4.x project showcasing how to pass custom screen buffers around using viewports. These screen buffers might include things such as colors, depth values, normal values... whatever you need for your project! These buffers can then be used in post-processing shaders instead of the built-in `hint_screen_texture`, `hint_depth_texture`, and `hint_normal_roughness_texture`.
 
+**Contents**
+* [Motivation](#motivation)
+* [Overview](#overview)
+    * [Camera Scene](#camera-scene)
+    * [Object Shaders](#object-shaders)
+* [How To Use](#how-to-use)
+   * [Use As Is](#use-as-is)
+   * [Set Up From Scratch](#set-up-from-scratch)
+      * [Notes On Passing Pure Data](#notes-on-passing-pure-data)
+
 ## Motivation
 
 As of the creation of this project, Godot does not have a good system for creating and using custom buffers. You can access the color, depth, and normal-roughness buffers in screen-reading shaders (see [this doc](https://docs.godotengine.org/en/stable/tutorials/shaders/screen-reading_shaders.html)). However, these buffers are captured before the transparent geometry pass, so they can never contain any data about transparent objects. In addition, there is no way to pass custom data—only color, depth, and normal can be used. This project shows how to use viewports to overcome both of these limitations.
