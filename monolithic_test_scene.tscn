@@ -1,8 +1,8 @@
 [gd_scene load_steps=13 format=3 uid="uid://t0e8wrcfrrl8"]
 
 [ext_resource type="PackedScene" uid="uid://8asyaabarqim" path="res://objects/main_camera.tscn" id="1_oub8t"]
-[ext_resource type="Shader" path="res://shaders/transparent_shader.gdshader" id="2_t8vaq"]
-[ext_resource type="Shader" path="res://shaders/opaque_shader.gdshader" id="3_xyfda"]
+[ext_resource type="Shader" path="res://shaders/monolithic/transparent_shader.gdshader" id="2_t8vaq"]
+[ext_resource type="Shader" path="res://shaders/monolithic/opaque_shader.gdshader" id="3_xyfda"]
 
 [sub_resource type="Environment" id="Environment_4jik7"]
 background_mode = 1
