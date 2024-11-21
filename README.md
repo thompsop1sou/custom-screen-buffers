@@ -26,9 +26,9 @@ This project has two main parts that are necessary for achieving the custom buff
 
 * A set of **object shaders**, which ensure each object renders itself properly to the different buffers
 
-To see these in action, take a look at either **modular_test_scene.tscn** or **monolithic_test_scene.tscn**. These scenes are almost identical except for a difference in how the object shaders are written. (This difference is explained below.)
+To see how these are used, take a look at either **modular_test_scene.tscn** or **monolithic_test_scene.tscn**. These scenes are almost identical except for a difference in how the object shaders are written. (This difference is explained below.)
 
-To change the final effect that is rendered, open **screen_shader.gdshader** and edit the `fragment()` function. In fact, there are already some lines of code that you can uncomment to see the different results (color is displayed by default):
+To change the final effect that is rendered, open **screen_shader.gdshader** and edit the `fragment()` function. Then run the one of the test scenes to see the result. In fact, there are already some lines of code that you can uncomment to see different results (color is displayed by default):
 
 ```glsl
 // Set the screen shader to show info about this pixel (uncomment a line to view)
@@ -41,6 +41,8 @@ ALBEDO = color.rgb;                                // Color
 As you uncomment these lines, you should see results like the following:
 
 ![Screen Shader Examples](screen_shader_examples.png "Screen Shader Examples")
+
+> **Note:** The effect will only be visible when the project is running. The buffers are passed by actual cameras, which means the effect relies on having all of those cameras pointed in the same direction. Because of this, it will only be visible when the cameras are actually being used, that is, when the project is running. The effect won't work through the 3D viewport in the editor.
 
 ### Camera Scene
 
