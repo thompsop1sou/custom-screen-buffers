@@ -1,6 +1,6 @@
 # Custom Screen Buffers
 
-This is a Godot 4.x project showcasing how to pass custom screen buffers around using viewports. These screen buffers can include various types of data, such as color, depth values, and normal values, depending on your project's needs. These buffers can then be used in post-processing shaders instead of the built-in `hint_screen_texture`, `hint_depth_texture`, and `hint_normal_roughness_texture`.
+This is a Godot 4.x project showcasing how to pass custom screen buffers around using viewports. These screen buffers can include various types of data, such as color, depth values, normal values, or other custom data, depending on your project's needs. These buffers can then be used in post-processing shaders in place of the built-in `hint_screen_texture`, `hint_depth_texture`, and `hint_normal_roughness_texture`.
 
 ## Contents
 * [Motivation](#motivation)
