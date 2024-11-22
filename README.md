@@ -1,8 +1,8 @@
 # Custom Screen Buffers
 
-This is a Godot 4.x project showcasing how to pass custom screen buffers around using viewports. These screen buffers might include things such as colors, depth values, normal values... whatever you need for your project! These buffers can then be used in post-processing shaders instead of the built-in `hint_screen_texture`, `hint_depth_texture`, and `hint_normal_roughness_texture`.
+This is a Godot 4.x project showcasing how to pass custom screen buffers around using viewports. These screen buffers can include various types of data, such as color, depth values, and normal values, depending on your project's needs. These buffers can then be used in post-processing shaders instead of the built-in `hint_screen_texture`, `hint_depth_texture`, and `hint_normal_roughness_texture`.
 
-**Contents**
+## Contents
 * [Motivation](#motivation)
 * [Overview](#overview)
     * [Camera Scene](#camera-scene)
@@ -11,6 +11,7 @@ This is a Godot 4.x project showcasing how to pass custom screen buffers around 
    * [Use As Is](#use-as-is)
    * [Set Up From Scratch](#set-up-from-scratch)
       * [Notes On Passing Pure Data](#notes-on-passing-pure-data)
+* [Limitations](#limitations) 
 
 ## Motivation
 
@@ -42,7 +43,7 @@ As you uncomment these lines, you should see results like the following:
 
 ![Screen Shader Examples](screen_shader_examples.png "Screen Shader Examples")
 
-> **Note:** The effect will only be visible when the project is running. The buffers are passed by actual cameras, which means the effect relies on having all of those cameras pointed in the same direction. Because of this, it will only be visible when the cameras are actually being used, that is, when the project is running. The effect won't work through the 3D viewport in the editor.
+> **Note:** The effect will only be visible when the project is running. The buffers are captured by actual cameras, which means the effect relies on having all of those cameras pointed in the same direction. Because of this, it will only be visible when the cameras are actually being used, that is, when the project is running. The effect won't work through the 3D viewport in the editor.
 
 ### Camera Scene
 
@@ -57,11 +58,11 @@ Think of this scene as single camera which captures all the necessary informatio
 
 ### Object Shaders
 
-I've provided a set of shaders to use on all 3D objects. This allows them to render color, depth info, and normal info on the appropriate layers. I've taken two different approaches to this, which you can select (or customize) based on what makes the most sense for your project:
+I've provided a set of shaders to use on all 3D objects. This allows them to render color, depth values, and normal values on the appropriate layers. I've taken two different approaches to this, which you can select (or customize) based on what makes the most sense for your project:
 
-1. **Modular:** The modular approach uses separate shaders for rendering color, depth info, and normal info. The different shaders are applied to a single mesh by chaining shaders via the `next_pass` property. To see an example of this, take a look at the mesh materials in **modular_test_scene.tscn**.
+1. **Modular:** The modular approach uses separate shaders for rendering color, depth values, and normal values. The different shaders are applied to a single mesh by chaining shaders via the `next_pass` property. To see an example of this, take a look at the mesh materials in **modular_test_scene.tscn**.
 
-2. **Monolithic:** The monolithic approach uses a single shader that renders color, depth info, and normal info. To see an example of this, take a look at the mesh materials in **monolithic_test_scene.tscn**.
+2. **Monolithic:** The monolithic approach uses a single shader that renders color, depth values, and normal values. To see an example of this, take a look at the mesh materials in **monolithic_test_scene.tscn**.
 
 Both the modular and monolithic approaches separate transparent materials from opaque materials. This is due to the limitations when working with transparent objects, such as sorting (see [this doc](https://docs.godotengine.org/en/4.3/tutorials/3d/3d_rendering_limitations.html#transparency-sorting)). I've separated transparent materials from opaque materials so that objects can be transparent when they need to be, but fully opaque objects won't be negatively affected. Obviously you can customize this as needed for your project.
 
@@ -89,7 +90,7 @@ If you want to set this up from scratch in your own project, the general steps t
 
 1. You'll need multiple cameras—one for each buffer that you want to capture. You'll want all of the cameras to have the same properties *except* that they should be on different visual layers. You'll also need to make it so that their 3D transforms match.
 
-2. Add a `SubViewport` for each of the cameras. The viewports will need to be connected to their corresponding cameras. You can do this by writing a little script, which can be put on the cameras or on the viewports. You'll make use of the method `RenderingServer.viewport_attach_camera()` to attach the cameras to the viewports (see [here](https://docs.godotengine.org/en/stable/classes/class_renderingserver.html#class-renderingserver-method-viewport-attach-camera)).
+2. Add a `SubViewport` for each of the cameras. The viewports will need to be connected to their corresponding cameras. You can do this by writing a short script, which can be put on the cameras or on the viewports. You'll make use of the method `RenderingServer.viewport_attach_camera()` to attach the cameras to the viewports (see [here](https://docs.godotengine.org/en/stable/classes/class_renderingserver.html#class-renderingserver-method-viewport-attach-camera)).
 
 3. Pass the resulting textures from these viewports as `sampler2D` uniforms to your post-processing shader. See [this doc](https://docs.godotengine.org/en/stable/tutorials/shaders/using_viewport_as_texture.html) for an example of how to do this.
 
@@ -108,3 +109,13 @@ For any buffer where you plan to pass pure data (unaffected by lights or other v
    * If you are using modular shaders chained together via the `next_pass` property, then you can use `render_mode unshaded;` and write to `ALBEDO` in the `fragment()` function.
 
    * If you have a single monolithic shader, pass the data through the `EMISSION` output in the `fragment()` function. Then, in the `light()` function, make sure that both `DIFFUSE_LIGHT` and `SPECULAR_LIGHT` are zeroed.
+
+## Limitations
+
+This project has some significant limitations. For that reason, it really should be considered a hack/workaround until the rendering compositor is completed.
+
+Some limitations that I am aware of include:
+
+* All buffers necessarily have the same format as a viewport texture: RGB8 (three channels of eight bits each). This is too much for some buffers and too little for others, so it's inefficient.
+
+* In the object shaders, I use conditional statements to check the camera's layer(s) and render differently (or discard) based on that. This may not be the most efficient approach, since more code will end up running than is strictly necessary. This is especially true for the monolithic shaders, since the `light()` function will end up running for all cameras even though it is not needed for the depth or normal buffers.
