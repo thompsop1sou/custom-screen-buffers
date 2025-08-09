@@ -17,4 +17,4 @@ shader_type spatial;
 #define OPAQUE
 
 // Give it the color shader (affects vertex() and fragment() functions).
-#include "res://shaders/monolithic/object_shader.gdshaderinc"
+#include "res://shaders/modular/color_shader.gdshaderinc"
