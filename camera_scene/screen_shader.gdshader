@@ -12,13 +12,6 @@ render_mode unshaded;
 
 
 
-// PREPROCESSOR DIRECTIVES
-
-// Contains layer numbers and some common functions
-#include "res://shaders/globals.gdshaderinc"
-
-
-
 // UNIFORMS
 
 /** This texture holds color from the second visual layer. */
@@ -51,8 +44,8 @@ void fragment()
 	vec3 normal = 2.0 * texture(normal_buffer, SCREEN_UV).xyz - vec3(1.0);
 
 	// Set the screen shader to show info about this pixel (uncomment a line to view)
-	ALBEDO = color.rgb;                                // Color
+	//ALBEDO = color.rgb;                                // Color
 	//ALBEDO = vec3(color.r + color.g + color.b) / 3.0;  // Grayscale 
 	//ALBEDO = vec3(depth);                              // Depth
-	//ALBEDO = 0.5 * (normal + vec3(1.0));               // Normal
+	ALBEDO = 0.5 * (normal + vec3(1.0));               // Normal
 }

@@ -1,5 +1,9 @@
 # Custom Screen Buffers
 
+> **Note:** This branch (`requires-material-layer-mask`) was created using a version of Godot built from a PR branch, which hasn't been merged yet. The PR in question can be found here: [Add 'layer_mask' property to 'Material'](https://github.com/godotengine/godot/pull/116915). As suggested by the title, the PR adds a `layer_mask` property to 3D materials, allowing them to be culled on a per-layer basis, without having to rely on shader code that checks `CAMERA_VISIBLE_LAYERS`. This is faster and also allows the use of `StandardMaterial3D` and `ORMMaterial3D` in this project.
+>
+> If you think this would be a benefit to your project, give the PR a try to make sure it works as expected. You'll have to clone the PR branch and build from source. See [this doc](https://docs.godotengine.org/en/stable/engine_details/development/compiling/index.html) for more information about building from source.
+
 This is a Godot 4.x project showcasing how to pass custom screen buffers around using viewports. These screen buffers can include various types of data, such as color, depth values, normal values, or other custom data, depending on your project's needs. These buffers can then be used in post-processing shaders in place of the built-in `hint_screen_texture`, `hint_depth_texture`, and `hint_normal_roughness_texture`.
 
 ## Contents
@@ -27,9 +31,7 @@ This project has two main parts that are necessary for achieving the custom buff
 
 * A set of **object shaders**, which ensure each object renders itself properly to the different buffers
 
-To see how these are used, take a look at either **modular_test_scene.tscn** or **monolithic_test_scene.tscn**. These scenes are almost identical except for a difference in how the object shaders are written. (This difference is explained below.)
-
-To change the final effect that is rendered, open **screen_shader.gdshader** and edit the `fragment()` function. Then run the one of the test scenes to see the result. In fact, there are already some lines of code that you can uncomment to see different results (color is displayed by default):
+To see how these are used, take a look at **test_scene.tscn**. To change the final effect that is rendered, open **screen_shader.gdshader** and edit the `fragment()` function. Then run the test scene to see the result. In fact, there are already some lines of code that you can uncomment to see different results (color is displayed by default):
 
 ```glsl
 // Set the screen shader to show info about this pixel (uncomment a line to view)
@@ -58,13 +60,11 @@ Think of this scene as single camera which captures all the necessary informatio
 
 ### Object Shaders
 
-I've provided a set of shaders to use on all 3D objects. This allows them to render color, depth values, and normal values on the appropriate layers. I've taken two different approaches to this, which you can select (or customize) based on what makes the most sense for your project:
+I've provided two shaders to use on all 3D objects: **depth_shader.gdshader** and **normal_shader.gdshader**. These allow the objects to render depth and normal values. Rendering color is handled by a `StandardMaterial3D`, but it could also be handled by an `ORMMaterial3D` or a custom shader.
 
-1. **Modular:** The modular approach uses separate shaders for rendering color, depth values, and normal values. The different shaders are applied to a single mesh by chaining shaders via the `next_pass` property. To see an example of this, take a look at the mesh materials in **modular_test_scene.tscn**.
+These materials/shader are applied to a single mesh by chaining via the `next_pass` property. Each material is then set to render on the appropriate layer using the material's `layer_mask` property.
 
-2. **Monolithic:** The monolithic approach uses a single shader that renders color, depth values, and normal values. To see an example of this, take a look at the mesh materials in **monolithic_test_scene.tscn**.
-
-Both the modular and monolithic approaches separate transparent materials from opaque materials. This is due to the limitations when working with transparent objects, such as sorting (see [this doc](https://docs.godotengine.org/en/4.3/tutorials/3d/3d_rendering_limitations.html#transparency-sorting)). I've separated transparent materials from opaque materials so that objects can be transparent when they need to be, but fully opaque objects won't be negatively affected. Obviously you can customize this as needed for your project.
+To see an example of this, take a look at any of the `MeshInstance3D` objects in **test_scene.tscn**. The materials are set on the mesh (not via the `material_override` or `material_overlay` properties).
 
 ## How To Use
 
@@ -76,13 +76,17 @@ To use this project without any modifications, simply add the **main_camera.tscn
 
 > **Note:** There may be some limitations to how you can use **main_camera.tscn**. For example, I don't believe it will work properly to have two of them loaded at once in your project.
 
-Finally, you'll need to set up your 3D objects. Make sure they are all rendering on layers 1 through 4. Then, change the materials to a shader material, choosing one of the following approaches:
+Finally, you'll need to set up your 3D objects. Make sure they are all rendering on layers 1 through 4. Then set up the material:
 
-* Modular approach: If the object is purely opaque, use the shader **opaque_color_shader.gdshader**. Otherwise, use **transparent_color_shader.gdshader**. After that, make sure to also add **depth_shader.gdshader** and **normal_shader.gdshader** to your objects by chaining them on the `next_pass` property of your materials.
+1. Set the material to whatever you want to use for the color buffer. Make sure its `layer_mask` property is set so that it is only rendering on layer 2.
 
-* Monolithic approach: If the object is purely opaque, use the shader **opaque_shader.gdshader**. Otherwise, use **transparent_shader.gdshader**.
+2. On the color material (which you just set up in step 1), set the `next_pass` property to be a new `ShaderMaterial`. On this new `ShaderMaterial`, set the `shader` property to point to **depth_shader.gdshader**. Make sure its `layer_mask` property is set so that it only renders on layer 3.
 
-To see an example of how to set up the objects and their materials, you can take a look at either **modular_test_scene.tscn** or **monolithic_test_scene.tscn**.
+3. On the depth material (which you just set up in step 2), set the `next_pass` property to be a new `ShaderMaterial`. On this new `ShaderMaterial`, set the `shader` property to point to **normal_shader.gdshader**. Make sure its `layer_mask` property is set so that it only renders on layer 4.
+
+To see an example of how to set up the objects and their materials, you can take a look at **test_scene.tscn**. You can also refer to the image below:
+
+![Chained Materials](chained_materials.png "Chained Materials")
 
 ### Set Up From Scratch
 
@@ -94,7 +98,7 @@ If you want to set this up from scratch in your own project, the general steps t
 
 3. Pass the resulting textures from these viewports as `sampler2D` uniforms to your post-processing shader. See [this doc](https://docs.godotengine.org/en/stable/tutorials/shaders/using_viewport_as_texture.html) for an example of how to do this.
 
-4. Finally, you'll need to write a custom shader (or set of shaders) for *all* the objects that you want to be correctly visible in these buffers that you just created. In this object shader, you'll need to output different data based on the layer that is currently being rendered. The current layer(s) are available in the shader built-in `CAMERA_VISIBLE_LAYERS`. (I believe `CAMERA_VISIBLE_LAYERS` is only available in the `vertex()` and `fragment()` functions by default, but you can also pass it as a `varying` to the `light()` function.) In addition, make sure that your objects are rendering on all the correct visual layers.
+4. Finally, you'll need to set up your objects with multiple materials chained on the `next_pass` property. Make sure each material has its `layer_mask` property set so that it renders to the appropriate layer. For your materials, you can use `StandardMaterial3D`, `ORMMaterial3D`, or `ShaderMaterial` with a spatial `Shader`.
 
 #### Notes On Passing Pure Data
 
@@ -104,18 +108,18 @@ For any buffer where you plan to pass pure data (unaffected by lights or other v
 
 * For the viewport, make sure to enable the `use_hdr_2d` property. (The `Environment` resource could also be added to the viewport instead of the camera.)
 
-* For the object shader:
-
-   * If you are using modular shaders chained together via the `next_pass` property, then you can use `render_mode unshaded;` and write to `ALBEDO` in the `fragment()` function.
-
-   * If you have a single monolithic shader, pass the data through the `EMISSION` output in the `fragment()` function. Then, in the `light()` function, make sure that both `DIFFUSE_LIGHT` and `SPECULAR_LIGHT` are zeroed.
+* For the object shader, use `render_mode unshaded;` and write to `ALBEDO` in the `fragment()` function.
 
 ## Limitations
 
 This project has some significant limitations. For that reason, it really should be considered a hack/workaround until the rendering compositor is completed.
 
-Some limitations that I am aware of include:
+The main limitations that I am aware of include:
 
 * All buffers necessarily have the same format as a viewport texture: RGB8 (three channels of eight bits each). This is too much for some buffers and too little for others, so it's inefficient.
 
-* In the object shaders, I use conditional statements to check the camera's layer(s) and render differently (or discard) based on that. This may not be the most efficient approach, since more code will end up running than is strictly necessary. This is especially true for the monolithic shaders, since the `light()` function will end up running for all cameras even though it is not needed for the depth or normal buffers.
+* The final effect can't be viewed in the editor.
+
+* There's currently an issue in the editor, where the depth and normal shaders are affecting the rendering of transparent objects. I think this particular issue can be fixed, but haven't had time to figure out the best way.
+
+  ![In-Editor Issue](in_editor_issue.png "In-Editor Issue")
