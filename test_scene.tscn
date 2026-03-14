@@ -1,0 +1,125 @@
+[gd_scene format=3 uid="uid://bb5e4oatdwlk4"]
+
+[ext_resource type="PackedScene" uid="uid://8asyaabarqim" path="res://camera_scene/main_camera.tscn" id="1_2nij2"]
+[ext_resource type="Shader" uid="uid://ddn3vgwx8munq" path="res://object_shaders/normal_shader.gdshader" id="2_7cbxl"]
+[ext_resource type="Shader" uid="uid://8mayeeimay2i" path="res://object_shaders/depth_shader.gdshader" id="3_8pr8v"]
+
+[sub_resource type="Environment" id="Environment_4jik7"]
+background_mode = 1
+background_color = Color(0.501961, 0.501961, 0.501961, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_coq8p"]
+render_priority = 0
+layer_mask = 4293918728
+shader = ExtResource("2_7cbxl")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2nij2"]
+render_priority = 0
+layer_mask = 4293918724
+next_pass = SubResource("ShaderMaterial_coq8p")
+shader = ExtResource("3_8pr8v")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vr1i5"]
+layer_mask = 4293918722
+next_pass = SubResource("ShaderMaterial_2nij2")
+transparency = 4
+depth_draw_mode = 1
+albedo_color = Color(0, 0, 1, 0.5019608)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gcbgh"]
+material = SubResource("StandardMaterial3D_vr1i5")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7cbxl"]
+render_priority = 0
+layer_mask = 4293918728
+shader = ExtResource("2_7cbxl")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8pr8v"]
+render_priority = 0
+layer_mask = 4293918724
+next_pass = SubResource("ShaderMaterial_7cbxl")
+shader = ExtResource("3_8pr8v")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_buypi"]
+layer_mask = 4293918722
+next_pass = SubResource("ShaderMaterial_8pr8v")
+transparency = 4
+depth_draw_mode = 1
+albedo_color = Color(1, 0, 0, 0.5019608)
+
+[sub_resource type="SphereMesh" id="SphereMesh_k2atl"]
+material = SubResource("StandardMaterial3D_buypi")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_njel3"]
+render_priority = 0
+layer_mask = 4293918728
+shader = ExtResource("2_7cbxl")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vr1i5"]
+render_priority = 0
+layer_mask = 4293918724
+next_pass = SubResource("ShaderMaterial_njel3")
+shader = ExtResource("3_8pr8v")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rpuu0"]
+layer_mask = 4293918722
+next_pass = SubResource("ShaderMaterial_vr1i5")
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_6cw7r"]
+material = SubResource("StandardMaterial3D_rpuu0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sasra"]
+render_priority = 0
+layer_mask = 4293918728
+shader = ExtResource("2_7cbxl")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_buypi"]
+render_priority = 0
+layer_mask = 4293918724
+next_pass = SubResource("ShaderMaterial_sasra")
+shader = ExtResource("3_8pr8v")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_njel3"]
+layer_mask = 4293918722
+next_pass = SubResource("ShaderMaterial_buypi")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_el30q"]
+material = SubResource("StandardMaterial3D_njel3")
+size = Vector2(10, 10)
+
+[node name="ModularTestScene" type="Node3D" unique_id=1145433447]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=757767181]
+environment = SubResource("Environment_4jik7")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=108534512]
+transform = Transform3D(0.965926, -0.25, 0.0669873, 0, 0.258819, 0.965926, -0.258819, -0.933013, 0.25, 0, 0, 0)
+layers = 3
+shadow_enabled = true
+
+[node name="MainCamera" parent="." unique_id=346350502 instance=ExtResource("1_2nij2")]
+transform = Transform3D(0.707107, -0.353553, 0.612373, 0, 0.866026, 0.499999, -0.707107, -0.353553, 0.612373, 1.25, 1, 1.25)
+
+[node name="CubeMesh" type="MeshInstance3D" parent="." unique_id=2037470939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+layers = 15
+mesh = SubResource("BoxMesh_gcbgh")
+
+[node name="SphereMesh" type="MeshInstance3D" parent="." unique_id=493401429]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0)
+layers = 15
+mesh = SubResource("SphereMesh_k2atl")
+
+[node name="PrismMesh" type="MeshInstance3D" parent="." unique_id=1335187188]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+layers = 15
+mesh = SubResource("PrismMesh_6cw7r")
+
+[node name="PlaneMesh" type="MeshInstance3D" parent="." unique_id=1154996908]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+layers = 15
+mesh = SubResource("PlaneMesh_el30q")
